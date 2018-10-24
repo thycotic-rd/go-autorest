@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Azure/go-autorest/autorest/mocks"
-	"github.com/Azure/go-autorest/tracing"
-	"github.com/Azure/go-autorest/version"
+	"github.com/noahhai/go-autorest/autorest/mocks"
+	"github.com/noahhai/go-autorest/tracing"
+	"github.com/noahhai/go-autorest/version"
 )
 
 func TestLoggingInspectorWithInspection(t *testing.T) {

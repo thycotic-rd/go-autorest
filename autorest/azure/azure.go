@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Azure/go-autorest/autorest"
+	"github.com/noahhai/go-autorest/autorest"
 )
 
 const (
