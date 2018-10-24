@@ -26,7 +26,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Azure/go-autorest/autorest/mocks"
+	"github.com/noahhai/go-autorest/autorest/mocks"
 )
 
 func ExampleSendWithSender() {

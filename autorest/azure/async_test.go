@@ -25,8 +25,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Azure/go-autorest/autorest"
-	"github.com/Azure/go-autorest/autorest/mocks"
+	"github.com/noahhai/go-autorest/autorest"
+	"github.com/noahhai/go-autorest/autorest/mocks"
 )
 
 func TestCreateFromInvalidRequestVerb(t *testing.T) {

@@ -33,9 +33,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Azure/go-autorest/autorest/date"
-	"github.com/Azure/go-autorest/tracing"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/noahhai/go-autorest/autorest/date"
+	"github.com/noahhai/go-autorest/tracing"
 )
 
 const (
@@ -404,6 +404,8 @@ type servicePrincipalToken struct {
 	Resource      string                 `json:"resource"`
 	AutoRefresh   bool                   `json:"autoRefresh"`
 	RefreshWithin time.Duration          `json:"refreshWithin"`
+	MsiSecret     string                 `json:"msiSecret"`
+	MsiEndpoint   string                 `json:"msiEndpoint"`
 }
 
 func validateOAuthConfig(oac OAuthConfig) error {
@@ -631,17 +633,17 @@ func GetMSIVMEndpoint() (string, error) {
 
 // NewServicePrincipalTokenFromMSI creates a ServicePrincipalToken via the MSI VM Extension.
 // It will use the system assigned identity when creating the token.
-func NewServicePrincipalTokenFromMSI(msiEndpoint, resource string, callbacks ...TokenRefreshCallback) (*ServicePrincipalToken, error) {
-	return newServicePrincipalTokenFromMSI(msiEndpoint, resource, nil, callbacks...)
+func NewServicePrincipalTokenFromMSI(msiEndpoint, resource, msiSecret string, callbacks ...TokenRefreshCallback) (*ServicePrincipalToken, error) {
+	return newServicePrincipalTokenFromMSI(msiEndpoint, resource, msiSecret, nil, callbacks...)
 }
 
 // NewServicePrincipalTokenFromMSIWithUserAssignedID creates a ServicePrincipalToken via the MSI VM Extension.
 // It will use the specified user assigned identity when creating the token.
-func NewServicePrincipalTokenFromMSIWithUserAssignedID(msiEndpoint, resource string, userAssignedID string, callbacks ...TokenRefreshCallback) (*ServicePrincipalToken, error) {
-	return newServicePrincipalTokenFromMSI(msiEndpoint, resource, &userAssignedID, callbacks...)
+func NewServicePrincipalTokenFromMSIWithUserAssignedID(msiEndpoint, resource, msiSecret string, userAssignedID string, callbacks ...TokenRefreshCallback) (*ServicePrincipalToken, error) {
+	return newServicePrincipalTokenFromMSI(msiEndpoint, resource, msiSecret, &userAssignedID, callbacks...)
 }
 
-func newServicePrincipalTokenFromMSI(msiEndpoint, resource string, userAssignedID *string, callbacks ...TokenRefreshCallback) (*ServicePrincipalToken, error) {
+func newServicePrincipalTokenFromMSI(msiEndpoint, resource, msiSecret string, userAssignedID *string, callbacks ...TokenRefreshCallback) (*ServicePrincipalToken, error) {
 	if err := validateStringParam(msiEndpoint, "msiEndpoint"); err != nil {
 		return nil, err
 	}
@@ -661,7 +663,14 @@ func newServicePrincipalTokenFromMSI(msiEndpoint, resource string, userAssignedI
 
 	v := url.Values{}
 	v.Set("resource", resource)
-	v.Set("api-version", "2018-02-01")
+	var apiVersion string
+	if strings.Contains(msiEndpoint, "MSI") || strings.Contains(msiEndpoint, "msi") {
+		apiVersion = "2017-09-01"
+	} else {
+		apiVersion = "2018-02-01"
+	}
+	v.Set("api-version", apiVersion)
+
 	if userAssignedID != nil {
 		v.Set("client_id", *userAssignedID)
 	}
@@ -677,6 +686,8 @@ func newServicePrincipalTokenFromMSI(msiEndpoint, resource string, userAssignedI
 			Resource:      resource,
 			AutoRefresh:   true,
 			RefreshWithin: defaultRefresh,
+			MsiSecret:     msiSecret,
+			MsiEndpoint:   msiEndpoint,
 		},
 		refreshLock:           &sync.RWMutex{},
 		sender:                &http.Client{Transport: tracing.Transport},
@@ -783,22 +794,40 @@ func (spt *ServicePrincipalToken) getGrantType() string {
 	}
 }
 
-func isIMDS(u url.URL) bool {
+func isIMDS(u url.URL, envMsiEndpointExpected string) bool {
 	imds, err := url.Parse(msiEndpoint)
 	if err != nil {
 		return false
 	}
-	return u.Host == imds.Host && u.Path == imds.Path
+	if u.Host == imds.Host && u.Path == imds.Path {
+		return true
+	}
+	if envMsiEndpointExpected == "" {
+		return false
+	}
+	emsi, err := url.Parse(envMsiEndpointExpected)
+	if err != nil {
+		return false
+	}
+	if u.Host == emsi.Host && u.Path == emsi.Path {
+		return true
+	}
+	return false
 }
 
 func (spt *ServicePrincipalToken) refreshInternal(ctx context.Context, resource string) error {
+
 	req, err := http.NewRequest(http.MethodPost, spt.inner.OauthConfig.TokenEndpoint.String(), nil)
 	if err != nil {
 		return fmt.Errorf("adal: Failed to build the refresh request. Error = '%v'", err)
 	}
 	req.Header.Add("User-Agent", userAgent())
+	if spt.inner.MsiSecret != "" {
+		req.Header.Add("secret", spt.inner.MsiSecret)
+	}
+
 	req = req.WithContext(ctx)
-	if !isIMDS(spt.inner.OauthConfig.TokenEndpoint) {
+	if !isIMDS(spt.inner.OauthConfig.TokenEndpoint, spt.inner.MsiEndpoint) {
 		v := url.Values{}
 		v.Set("client_id", spt.inner.ClientID)
 		v.Set("resource", resource)
@@ -835,7 +864,7 @@ func (spt *ServicePrincipalToken) refreshInternal(ctx context.Context, resource 
 	}
 
 	var resp *http.Response
-	if isIMDS(spt.inner.OauthConfig.TokenEndpoint) {
+	if isIMDS(spt.inner.OauthConfig.TokenEndpoint, spt.inner.MsiEndpoint) {
 		resp, err = retryForIMDS(spt.sender, req, spt.MaxMSIRefreshAttempts)
 	} else {
 		resp, err = spt.sender.Do(req)

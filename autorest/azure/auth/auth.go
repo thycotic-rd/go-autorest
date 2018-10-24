@@ -28,11 +28,11 @@ import (
 	"strings"
 	"unicode/utf16"
 
-	"github.com/Azure/go-autorest/autorest"
-	"github.com/Azure/go-autorest/autorest/adal"
-	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/azure/cli"
 	"github.com/dimchansky/utfbom"
+	"github.com/noahhai/go-autorest/autorest"
+	"github.com/noahhai/go-autorest/autorest/adal"
+	"github.com/noahhai/go-autorest/autorest/azure"
+	"github.com/noahhai/go-autorest/autorest/azure/cli"
 	"golang.org/x/crypto/pkcs12"
 )
 
@@ -79,6 +79,8 @@ type settings struct {
 	envName             string
 	resource            string
 	environment         azure.Environment
+	msiEndpoint         string
+	msiSecret           string
 }
 
 func getAuthenticationSettings() (s settings, err error) {
@@ -92,6 +94,8 @@ func getAuthenticationSettings() (s settings, err error) {
 		password:            os.Getenv("AZURE_PASSWORD"),
 		envName:             os.Getenv("AZURE_ENVIRONMENT"),
 		resource:            os.Getenv("AZURE_AD_RESOURCE"),
+		msiEndpoint:         os.Getenv("MSI_ENDPOINT"),
+		msiSecret:           os.Getenv("MSI_SECRET"),
 	}
 
 	if s.envName == "" {
@@ -131,6 +135,8 @@ func (settings settings) getAuthorizer() (autorest.Authorizer, error) {
 	config := NewMSIConfig()
 	config.Resource = settings.resource
 	config.ClientID = settings.clientID
+	config.Endpoint = settings.msiEndpoint
+	config.Secret = settings.msiSecret
 	return config.Authorizer()
 }
 
@@ -474,23 +480,29 @@ func (ups UsernamePasswordConfig) Authorizer() (autorest.Authorizer, error) {
 type MSIConfig struct {
 	Resource string
 	ClientID string
+	Endpoint string
+	Secret   string
 }
 
 // Authorizer gets the authorizer from MSI.
 func (mc MSIConfig) Authorizer() (autorest.Authorizer, error) {
-	msiEndpoint, err := adal.GetMSIVMEndpoint()
-	if err != nil {
-		return nil, err
+	var err error
+	msiEndpoint := mc.Endpoint
+	if msiEndpoint == "" {
+		msiEndpoint, err = adal.GetMSIVMEndpoint()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var spToken *adal.ServicePrincipalToken
 	if mc.ClientID == "" {
-		spToken, err = adal.NewServicePrincipalTokenFromMSI(msiEndpoint, mc.Resource)
+		spToken, err = adal.NewServicePrincipalTokenFromMSI(msiEndpoint, mc.Resource, mc.Secret)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get oauth token from MSI: %v", err)
 		}
 	} else {
-		spToken, err = adal.NewServicePrincipalTokenFromMSIWithUserAssignedID(msiEndpoint, mc.Resource, mc.ClientID)
+		spToken, err = adal.NewServicePrincipalTokenFromMSIWithUserAssignedID(msiEndpoint, mc.Resource, mc.Secret, mc.ClientID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get oauth token from MSI for user assigned identity: %v", err)
 		}

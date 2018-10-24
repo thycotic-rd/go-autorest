@@ -20,8 +20,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Azure/go-autorest/autorest/adal"
-	"github.com/Azure/go-autorest/tracing"
+	"github.com/noahhai/go-autorest/autorest/adal"
+	"github.com/noahhai/go-autorest/tracing"
 )
 
 const (

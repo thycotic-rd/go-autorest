@@ -20,8 +20,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/adal"
-	"github.com/Azure/go-autorest/autorest/mocks"
+	"github.com/noahhai/go-autorest/autorest/adal"
+	"github.com/noahhai/go-autorest/autorest/mocks"
 )
 
 const (

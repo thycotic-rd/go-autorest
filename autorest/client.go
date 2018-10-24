@@ -25,9 +25,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/go-autorest/logger"
-	"github.com/Azure/go-autorest/tracing"
-	"github.com/Azure/go-autorest/version"
+	"github.com/noahhai/go-autorest/logger"
+	"github.com/noahhai/go-autorest/tracing"
+	"github.com/noahhai/go-autorest/version"
 )
 
 const (
