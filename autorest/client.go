@@ -25,9 +25,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noahhai/go-autorest/logger"
-	"github.com/noahhai/go-autorest/tracing"
-	"github.com/noahhai/go-autorest/version"
+	"github.com/thycotic-rd/go-autorest/logger"
+	"github.com/thycotic-rd/go-autorest/tracing"
+	"github.com/thycotic-rd/go-autorest/version"
 )
 
 const (

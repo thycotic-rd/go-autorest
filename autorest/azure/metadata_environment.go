@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/noahhai/go-autorest/autorest"
+	"github.com/thycotic-rd/go-autorest/autorest"
 )
 
 // Copyright 2017 Microsoft Corporation

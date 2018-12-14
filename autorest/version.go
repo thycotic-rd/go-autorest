@@ -1,6 +1,6 @@
 package autorest
 
-import "github.com/noahhai/go-autorest/version"
+import "github.com/thycotic-rd/go-autorest/version"
 
 // Copyright 2017 Microsoft Corporation
 //

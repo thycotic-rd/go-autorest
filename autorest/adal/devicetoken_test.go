@@ -21,7 +21,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/noahhai/go-autorest/autorest/mocks"
+	"github.com/thycotic-rd/go-autorest/autorest/mocks"
 )
 
 const (
