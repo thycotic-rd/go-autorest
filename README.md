@@ -1,6 +1,6 @@
 # go-autorest
 
-[![GoDoc](https://godoc.org/github.com/noahhai/go-autorest/autorest?status.png)](https://godoc.org/github.com/noahhai/go-autorest/autorest)
+[![GoDoc](https://godoc.org/github.com/thycotic-rd/go-autorest/autorest?status.png)](https://godoc.org/github.com/thycotic-rd/go-autorest/autorest)
 [![Build Status](https://travis-ci.org/Azure/go-autorest.svg?branch=master)](https://travis-ci.org/Azure/go-autorest)
 [![Go Report Card](https://goreportcard.com/badge/Azure/go-autorest)](https://goreportcard.com/report/Azure/go-autorest)
 
@@ -8,7 +8,7 @@ Package go-autorest provides an HTTP request client for use with [Autorest](http
 
 An authentication client tested with Azure Active Directory (AAD) is also
 provided in this repo in the package
-`github.com/noahhai/go-autorest/autorest/adal`.  Despite its name, this package
+`github.com/thycotic-rd/go-autorest/autorest/adal`.  Despite its name, this package
 is maintained only as part of the Azure Go SDK and is not related to other
 "ADAL" libraries in [github.com/AzureAD](https://github.com/AzureAD).
 
@@ -77,7 +77,7 @@ generated clients, see the Client described below.
 
 The Swagger specification (https://swagger.io) that drives AutoRest
 (https://github.com/Azure/autorest/) precisely defines two date forms: date and date-time. The
-github.com/noahhai/go-autorest/autorest/date package provides time.Time derivations to ensure correct
+github.com/thycotic-rd/go-autorest/autorest/date package provides time.Time derivations to ensure correct
 parsing and formatting.
 
 ### Handling Empty Values
@@ -129,10 +129,10 @@ associated with a key should be cleared. With the helpers, the previous example 
 ## Install
 
 ```bash
-go get github.com/noahhai/go-autorest/autorest
-go get github.com/noahhai/go-autorest/autorest/azure
-go get github.com/noahhai/go-autorest/autorest/date
-go get github.com/noahhai/go-autorest/autorest/to
+go get github.com/thycotic-rd/go-autorest/autorest
+go get github.com/thycotic-rd/go-autorest/autorest/azure
+go get github.com/thycotic-rd/go-autorest/autorest/date
+go get github.com/thycotic-rd/go-autorest/autorest/to
 ```
 
 ## License

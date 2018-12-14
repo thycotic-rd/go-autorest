@@ -34,8 +34,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/noahhai/go-autorest/autorest/date"
-	"github.com/noahhai/go-autorest/tracing"
+	"github.com/thycotic-rd/go-autorest/autorest/date"
+	"github.com/thycotic-rd/go-autorest/tracing"
 )
 
 const (

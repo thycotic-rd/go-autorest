@@ -25,8 +25,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noahhai/go-autorest/autorest"
-	"github.com/noahhai/go-autorest/tracing"
+	"github.com/thycotic-rd/go-autorest/autorest"
+	"github.com/thycotic-rd/go-autorest/tracing"
 )
 
 const (
@@ -94,7 +94,7 @@ func (f *Future) Done(sender autorest.Sender) (bool, error) {
 
 // DoneWithContext queries the service to see if the operation has completed.
 func (f *Future) DoneWithContext(ctx context.Context, sender autorest.Sender) (done bool, err error) {
-	ctx = tracing.StartSpan(ctx, "github.com/noahhai/go-autorest/autorest/azure/async.DoneWithContext")
+	ctx = tracing.StartSpan(ctx, "github.com/thycotic-rd/go-autorest/autorest/azure/async.DoneWithContext")
 	defer func() {
 		sc := -1
 		resp := f.Response()
@@ -182,7 +182,7 @@ func (f Future) WaitForCompletion(ctx context.Context, client autorest.Client) e
 // polling duration has been exceeded.  It will retry failed polling attempts based on
 // the retry value defined in the client up to the maximum retry attempts.
 func (f *Future) WaitForCompletionRef(ctx context.Context, client autorest.Client) (err error) {
-	ctx = tracing.StartSpan(ctx, "github.com/noahhai/go-autorest/autorest/azure/async.WaitForCompletionRef")
+	ctx = tracing.StartSpan(ctx, "github.com/thycotic-rd/go-autorest/autorest/azure/async.WaitForCompletionRef")
 	defer func() {
 		sc := -1
 		resp := f.Response()

@@ -26,7 +26,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/noahhai/go-autorest/autorest/adal"
+	"github.com/thycotic-rd/go-autorest/autorest/adal"
 )
 
 // EncodedAs is a series of constants specifying various data encodings

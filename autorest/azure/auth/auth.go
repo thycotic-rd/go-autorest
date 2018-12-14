@@ -29,10 +29,10 @@ import (
 	"unicode/utf16"
 
 	"github.com/dimchansky/utfbom"
-	"github.com/noahhai/go-autorest/autorest"
-	"github.com/noahhai/go-autorest/autorest/adal"
-	"github.com/noahhai/go-autorest/autorest/azure"
-	"github.com/noahhai/go-autorest/autorest/azure/cli"
+	"github.com/thycotic-rd/go-autorest/autorest"
+	"github.com/thycotic-rd/go-autorest/autorest/adal"
+	"github.com/thycotic-rd/go-autorest/autorest/azure"
+	"github.com/thycotic-rd/go-autorest/autorest/azure/cli"
 	"golang.org/x/crypto/pkcs12"
 )
 

@@ -25,8 +25,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/noahhai/go-autorest/autorest/adal"
-	"github.com/noahhai/go-autorest/autorest/date"
+	"github.com/thycotic-rd/go-autorest/autorest/adal"
+	"github.com/thycotic-rd/go-autorest/autorest/date"
 	"github.com/mitchellh/go-homedir"
 )
 
